@@ -1,0 +1,49 @@
+{
+  "name": "prosora-ghost-blog-cms",
+  "version": "1.0.0",
+  "description": "Ghost Pro 6 CMS deployment with advanced features on Render.com",
+  "main": "index.js",
+  "scripts": {
+    "dev": "docker-compose up -d",
+    "dev:logs": "docker-compose logs -f ghost",
+    "dev:stop": "docker-compose down",
+    "dev:clean": "docker-compose down -v",
+    "deploy": "render deploy",
+    "setup:mailgun": "echo 'Please configure Mailgun credentials in Render dashboard'",
+    "setup:stripe": "echo 'Please configure Stripe credentials in Render dashboard'",
+    "backup": "echo 'Backup functionality - implement based on your needs'",
+    "test": "echo 'No tests specified yet'"
+  },
+  "keywords": [
+    "ghost",
+    "cms",
+    "blog",
+    "docker",
+    "render",
+    "activitypub",
+    "mailgun",
+    "stripe",
+    "analytics"
+  ],
+  "author": "Prosora Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/prosora-ghost-blog-cms.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "ghost": {
+    "version": "6.x",
+    "features": [
+      "activitypub",
+      "analytics",
+      "newsletters",
+      "memberships",
+      "payments"
+    ]
+  }
+}

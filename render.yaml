@@ -1,0 +1,72 @@
+services:
+  # Ghost CMS Service
+  - type: web
+    name: ghost-pro-6
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /ghost/api/v4/admin/site/
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: url
+        fromService:
+          type: web
+          name: ghost-pro-6
+          property: host
+      - key: database__client
+        value: mysql
+      - key: database__connection__host
+        fromDatabase:
+          name: ghost-mysql
+          property: host
+      - key: database__connection__port
+        fromDatabase:
+          name: ghost-mysql
+          property: port
+      - key: database__connection__user
+        fromDatabase:
+          name: ghost-mysql
+          property: user
+      - key: database__connection__password
+        fromDatabase:
+          name: ghost-mysql
+          property: password
+      - key: database__connection__database
+        fromDatabase:
+          name: ghost-mysql
+          property: database
+      - key: mail__transport
+        value: SMTP
+      - key: mail__options__service
+        value: Mailgun
+      - key: mail__options__host
+        value: smtp.mailgun.org
+      - key: mail__options__port
+        value: 587
+      - key: mail__options__auth__user
+        sync: false
+      - key: mail__options__auth__pass
+        sync: false
+      - key: mail__from
+        sync: false
+      - key: activitypub__enabled
+        value: true
+      - key: analytics__enabled
+        value: true
+      - key: storage__active
+        value: local
+    disk:
+      name: ghost-content
+      mountPath: /var/lib/ghost/content
+      sizeGB: 1
+
+  # MySQL Database Service
+databases:
+  - name: ghost-mysql
+    databaseName: ghost
+    user: ghost
+    plan: free
+    region: oregon
