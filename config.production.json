@@ -1,5 +1,5 @@
 {
-  "url": "URL",
+  "url": "https://ghost-blog-cms.onrender.com",
   "server": {
     "port": 2368,
     "host": "0.0.0.0"
@@ -55,6 +55,6 @@
   },
   "enableDeveloperExperiments": true,
   "editor": {
-    "url": "https://your-domain.com/ghost/"
+    "url": "https://ghost-blog-cms.onrender.com/ghost/"
   }
 }
