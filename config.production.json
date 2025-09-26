@@ -1,5 +1,5 @@
 {
-  "url": "https://ghost-blog-cms-csnw.onrender.com",
+  "url": "https://ghost-pro-6.onrender.com",
   "server": {
     "port": 2368,
     "host": "0.0.0.0"
@@ -20,7 +20,7 @@
         "pass": "your-mailgun-smtp-password"
       }
     },
-    "from": "noreply@ghost-blog-cms.onrender.com"
+    "from": "noreply@sandboxd7ba2f7f840349a8885eae43b7189fc3.mailgun.org"
   },
   "logging": {
     "transports": ["stdout"]
@@ -55,6 +55,6 @@
   },
   "enableDeveloperExperiments": true,
   "editor": {
-    "url": "https://ghost-blog-cms-csnw.onrender.com/ghost/"
+    "url": "https://ghost-pro-6.onrender.com/ghost/"
   }
 }
