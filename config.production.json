@@ -6,10 +6,7 @@
   },
   "database": {
     "client": "pg",
-    "connection": {
-      "connectionString": "postgresql://user:password@host:port/database",
-      "ssl": { "rejectUnauthorized": false }
-    }
+    "connection": "DATABASE_URL"
   },
   "mail": {
     "transport": "SMTP",
