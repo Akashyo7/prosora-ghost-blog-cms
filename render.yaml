@@ -1,11 +1,10 @@
 services:
   - type: web
     name: ghost-blog-cms
-    env: node
+    env: docker
     plan: free
-    buildCommand: npm install --production
-    startCommand: npm start
-    healthCheckPath: /
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /ghost/api/v4/admin/site/
     envVars:
       - key: NODE_ENV
         value: production
