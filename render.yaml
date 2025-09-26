@@ -58,10 +58,6 @@ services:
         value: true
       - key: storage__active
         value: local
-    disk:
-      name: ghost-content
-      mountPath: /var/lib/ghost/content
-      sizeGB: 1
 
   # MySQL Database Service
 databases:
