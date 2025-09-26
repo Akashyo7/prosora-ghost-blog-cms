@@ -8,6 +8,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: URL
+        value: https://ghost-blog-cms.onrender.com
       - key: DATABASE_URL
         sync: false
       - key: CLOUDINARY_CLOUD_NAME
