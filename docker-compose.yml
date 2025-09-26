@@ -1,53 +1,164 @@
 version: '3.8'
 
 services:
-  ghost:
-    build: .
-    restart: always
+  # Caddy - Modern web server with automatic HTTPS
+  caddy:
+    image: caddy:2.7-alpine
+    container_name: prosora-caddy
+    restart: unless-stopped
     ports:
-      - "2368:2368"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     environment:
-      # Basic Ghost Configuration
-      NODE_ENV: production
-      url: ${GHOST_URL:-http://localhost:2368}
+      - DOMAIN=${DOMAIN}
+      - EMAIL=${ADMIN_EMAIL}
+    networks:
+      - prosora-network
+    depends_on:
+      - ghost
+
+  # Ghost 6 - Latest Ghost CMS
+  ghost:
+    image: ghost:6-alpine
+    container_name: prosora-ghost
+    restart: unless-stopped
+    environment:
+      # Core Ghost Configuration
+      - NODE_ENV=production
+      - url=${GHOST_URL}
+      - database__client=mysql
+      - database__connection__host=mysql
+      - database__connection__user=${MYSQL_USER}
+      - database__connection__password=${MYSQL_PASSWORD}
+      - database__connection__database=${MYSQL_DATABASE}
       
-      # Database Configuration (PostgreSQL via Neon)
-      database__client: pg
-      database__connection__connectionString: ${DATABASE_URL}
+      # Email Configuration (Resend)
+      - mail__transport=SMTP
+      - mail__options__service=SMTP
+      - mail__options__host=${RESEND_SMTP_HOST}
+      - mail__options__port=${RESEND_SMTP_PORT}
+      - mail__options__secure=true
+      - mail__options__auth__user=${RESEND_SMTP_USER}
+      - mail__options__auth__pass=${RESEND_API_KEY}
+      - mail__from=${GHOST_FROM_EMAIL}
       
-      # Cloudinary Configuration
-      storage__active: cloudinary
-      storage__cloudinary__cloud_name: ${CLOUDINARY_CLOUD_NAME}
-      storage__cloudinary__api_key: ${CLOUDINARY_API_KEY}
-      storage__cloudinary__api_secret: ${CLOUDINARY_API_SECRET}
-      storage__cloudinary__secure: ${CLOUDINARY_SECURE:-true}
+      # Storage Configuration (Cloudinary)
+      - storage__active=cloudinary
+      - storage__cloudinary__useCdn=true
+      - storage__cloudinary__upload__use_filename=true
+      - storage__cloudinary__upload__unique_filename=false
+      - storage__cloudinary__upload__overwrite=false
+      - storage__cloudinary__upload__folder=ghost-blog
+      - storage__cloudinary__upload__tags=ghost,blog,prosora
+      - storage__cloudinary__fetch__quality=auto
+      - storage__cloudinary__fetch__secure=true
+      - storage__cloudinary__fetch__cdn_subdomain=true
+      - storage__cloudinary__auth__cloud_name=${CLOUDINARY_CLOUD_NAME}
+      - storage__cloudinary__auth__api_key=${CLOUDINARY_API_KEY}
+      - storage__cloudinary__auth__api_secret=${CLOUDINARY_API_SECRET}
       
-      # Mail Configuration (Mailgun)
-      mail__transport: SMTP
-      mail__options__service: Mailgun
-      mail__options__host: ${MAILGUN_SMTP_SERVER:-smtp.mailgun.org}
-      mail__options__port: ${MAILGUN_SMTP_PORT:-587}
-      mail__options__auth__user: ${MAILGUN_SMTP_LOGIN}
-      mail__options__auth__pass: ${MAILGUN_SMTP_PASSWORD}
-      mail__from: ${GHOST_FROM_EMAIL}
+      # Stripe Configuration
+      - members_subscription_settings__allowSelfSignup=true
+      - members_subscription_settings__fromAddress=${GHOST_FROM_EMAIL}
+      - stripe_product_name=${SITE_TITLE}
+      - stripe_secret_key=${STRIPE_SECRET_KEY}
+      - stripe_publishable_key=${STRIPE_PUBLISHABLE_KEY}
+      - stripe_webhook_secret=${STRIPE_WEBHOOK_SECRET}
       
-      # ActivityPub Configuration
-      activitypub__enabled: true
-      activitypub__url: ${ACTIVITYPUB_URL}
+      # Performance & Security
+      - privacy__useUpdateCheck=false
+      - privacy__useGravatar=false
+      - privacy__useRpcPing=false
+      - privacy__useStructuredData=true
       
-      # Analytics Configuration
-      analytics__enabled: true
-      
+      # Logging
+      - logging__level=info
+      - logging__rotation__enabled=true
+      - logging__rotation__count=5
+      - logging__rotation__period=1d
     volumes:
       - ghost_content:/var/lib/ghost/content
-      - ghost_logs:/var/lib/ghost/logs
+      - ./config/ghost:/var/lib/ghost/content/settings:ro
     networks:
-      - ghost-network
+      - prosora-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # MySQL 8 - Reliable database
+  mysql:
+    image: mysql:8.0
+    container_name: prosora-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./config/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    networks:
+      - prosora-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis - Caching (optional but recommended)
+  redis:
+    image: redis:7-alpine
+    container_name: prosora-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+      - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - prosora-network
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Watchtower - Automatic updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: prosora-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=86400 # 24 hours
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+    networks:
+      - prosora-network
 
 volumes:
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
   ghost_content:
-  ghost_logs:
+    driver: local
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
 
 networks:
-  ghost-network:
+  prosora-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
