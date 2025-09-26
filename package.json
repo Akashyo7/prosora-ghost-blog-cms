@@ -20,7 +20,6 @@
   "author": "Prosora Team",
   "license": "MIT",
   "dependencies": {
-    "ghost": "^5.75.0",
     "pg": "^8.11.3",
     "ghost-storage-cloudinary": "^3.0.2"
   },
