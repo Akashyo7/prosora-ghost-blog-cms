@@ -1,48 +1,37 @@
 services:
-  # Ghost CMS Service
   - type: web
-    name: ghost-pro-6
-    env: docker
-    dockerfilePath: ./Dockerfile
+    name: ghost-blog-cms
+    env: node
     plan: free
-    region: oregon
-    branch: main
-    healthCheckPath: /ghost/api/v4/admin/site/
+    buildCommand: npm install --production
+    startCommand: npm start
+    healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
-      - key: url
-        fromService:
-          type: web
-          name: ghost-pro-6
-          property: host
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_EOVrRDdH23Sb@ep-quiet-hall-a1ovs2pc-pooler.ap-southeast-1.aws.neon.tech/ghost_production?sslmode=require&channel_binding=require
+        sync: false
       - key: CLOUDINARY_CLOUD_NAME
-        value: dptbffnce
+        sync: false
       - key: CLOUDINARY_API_KEY
-        value: 692547711148446
+        sync: false
       - key: CLOUDINARY_API_SECRET
-        value: 6Yv_tSglN4uOY6KyS1wQWpv2bXI
-      - key: CLOUDINARY_SECURE
-        value: true
-      - key: mail__transport
-        value: SMTP
-      - key: mail__options__service
-        value: Mailgun
-      - key: mail__options__host
-        value: smtp.mailgun.org
-      - key: mail__options__port
-        value: 587
-      - key: mail__options__auth__user
         sync: false
-      - key: mail__options__auth__pass
+      - key: MAILGUN_API_KEY
         sync: false
-      - key: mail__from
+      - key: MAILGUN_DOMAIN
         sync: false
-      - key: activitypub__enabled
-        value: true
-      - key: analytics__enabled
-        value: true
-      - key: storage__active
-        value: local
+      - key: MAILGUN_SMTP_USER
+        sync: false
+      - key: MAILGUN_SMTP_PASS
+        sync: false
+      - key: GHOST_FROM_EMAIL
+        sync: false
+      - key: TINYBIRD_API_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false

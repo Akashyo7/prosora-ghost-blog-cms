@@ -1,5 +1,5 @@
 {
-  "url": "https://your-app-name.onrender.com",
+  "url": "https://your-domain.com",
   "server": {
     "port": 2368,
     "host": "0.0.0.0"
@@ -7,17 +7,8 @@
   "database": {
     "client": "pg",
     "connection": {
-      "connectionString": "postgresql://neondb_owner:npg_EOVrRDdH23Sb@ep-quiet-hall-a1ovs2pc-pooler.ap-southeast-1.aws.neon.tech/ghost_production?sslmode=require&channel_binding=require",
-      "ssl": {
-        "rejectUnauthorized": false
-      }
-    },
-    "pool": {
-      "min": 2,
-      "max": 10
-    },
-    "migrations": {
-      "transactionPerMigration": false
+      "connectionString": "postgresql://user:password@host:port/database",
+      "ssl": { "rejectUnauthorized": false }
     }
   },
   "mail": {
@@ -28,44 +19,45 @@
       "port": 587,
       "secure": false,
       "auth": {
-        "user": "your-mailgun-smtp-login",
+        "user": "your-mailgun-smtp-user",
         "pass": "your-mailgun-smtp-password"
       }
     },
-    "from": "noreply@yourdomain.com"
-  },
-  "storage": {
-    "active": "cloudinary",
-    "cloudinary": {
-      "cloud_name": "dptbffnce",
-      "api_key": "692547711148446",
-      "api_secret": "6Yv_tSglN4uOY6KyS1wQWpv2bXI",
-      "secure": true,
-      "folder": "ghost-blog",
-      "transformation": {
-        "quality": "auto",
-        "fetch_format": "auto"
-      }
-    }
+    "from": "noreply@your-domain.com"
   },
   "logging": {
-    "level": "info",
-    "rotation": {
-      "enabled": true
-    },
     "transports": ["stdout"]
   },
   "process": "systemd",
   "paths": {
-    "contentPath": "/var/lib/ghost/content/"
+    "contentPath": "/var/lib/ghost/content"
+  },
+  "storage": {
+    "active": "cloudinary-store",
+    "cloudinary-store": {
+      "useDatedFolder": false,
+      "upload": {
+        "use_filename": true,
+        "unique_filename": false,
+        "overwrite": false,
+        "folder": "ghost-blog-cms",
+        "tags": "blog,ghost-cms"
+      },
+      "fetch": {
+        "quality": "auto",
+        "secure": true,
+        "cdn_subdomain": true
+      }
+    }
+  },
+  "imageOptimization": {
+    "resize": false
   },
   "privacy": {
-    "useUpdateCheck": false
+    "useTinybirdIntegration": true
   },
-  "useMinFiles": true,
-  "caching": {
-    "frontend": {
-      "maxAge": 600
-    }
+  "enableDeveloperExperiments": true,
+  "editor": {
+    "url": "https://your-domain.com/ghost/"
   }
 }
