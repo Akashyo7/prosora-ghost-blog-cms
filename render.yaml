@@ -8,6 +8,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: url
+        value: https://ghost-pro-6.onrender.com
       - key: DATABASE_URL
         sync: false
       - key: CLOUDINARY_CLOUD_NAME
