@@ -22,7 +22,7 @@
   "dependencies": {
     "ghost": "^5.75.0",
     "pg": "^8.11.3",
-    "ghost-storage-cloudinary": "^2.3.0"
+    "ghost-storage-cloudinary": "^3.0.2"
   },
   "engines": {
     "node": ">=18.0.0",
