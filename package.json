@@ -1,49 +1,35 @@
 {
   "name": "prosora-ghost-blog-cms",
   "version": "1.0.0",
-  "description": "Ghost Pro 6 CMS deployment with advanced features on Render.com",
+  "description": "Ghost Pro 6 CMS with PostgreSQL (Neon) and Cloudinary integration",
   "main": "index.js",
   "scripts": {
-    "dev": "docker-compose up -d",
-    "dev:logs": "docker-compose logs -f ghost",
-    "dev:stop": "docker-compose down",
-    "dev:clean": "docker-compose down -v",
-    "deploy": "render deploy",
-    "setup:mailgun": "echo 'Please configure Mailgun credentials in Render dashboard'",
-    "setup:stripe": "echo 'Please configure Stripe credentials in Render dashboard'",
-    "backup": "echo 'Backup functionality - implement based on your needs'",
-    "test": "echo 'No tests specified yet'"
+    "start": "ghost start",
+    "dev": "ghost start --development",
+    "build": "ghost build",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "ghost",
     "cms",
     "blog",
-    "docker",
-    "render",
-    "activitypub",
-    "mailgun",
-    "stripe",
-    "analytics"
+    "postgresql",
+    "cloudinary",
+    "neon"
   ],
   "author": "Prosora Team",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/prosora-ghost-blog-cms.git"
+  "dependencies": {
+    "ghost": "^5.75.0",
+    "pg": "^8.11.3",
+    "ghost-storage-cloudinary": "^2.3.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
-  "dependencies": {},
-  "devDependencies": {},
-  "ghost": {
-    "version": "6.x",
-    "features": [
-      "activitypub",
-      "analytics",
-      "newsletters",
-      "memberships",
-      "payments"
-    ]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akashyo7/prosora-ghost-blog-cms.git"
   }
 }

@@ -16,28 +16,16 @@ services:
           type: web
           name: ghost-pro-6
           property: host
-      - key: database__client
-        value: mysql
-      - key: database__connection__host
-        fromDatabase:
-          name: ghost-mysql
-          property: host
-      - key: database__connection__port
-        fromDatabase:
-          name: ghost-mysql
-          property: port
-      - key: database__connection__user
-        fromDatabase:
-          name: ghost-mysql
-          property: user
-      - key: database__connection__password
-        fromDatabase:
-          name: ghost-mysql
-          property: password
-      - key: database__connection__database
-        fromDatabase:
-          name: ghost-mysql
-          property: database
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_EOVrRDdH23Sb@ep-quiet-hall-a1ovs2pc-pooler.ap-southeast-1.aws.neon.tech/ghost_production?sslmode=require&channel_binding=require
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dptbffnce
+      - key: CLOUDINARY_API_KEY
+        value: 692547711148446
+      - key: CLOUDINARY_API_SECRET
+        value: 6Yv_tSglN4uOY6KyS1wQWpv2bXI
+      - key: CLOUDINARY_SECURE
+        value: true
       - key: mail__transport
         value: SMTP
       - key: mail__options__service
@@ -58,11 +46,3 @@ services:
         value: true
       - key: storage__active
         value: local
-
-  # MySQL Database Service
-databases:
-  - name: ghost-mysql
-    databaseName: ghost
-    user: ghost
-    plan: free
-    region: oregon
